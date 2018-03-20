@@ -19,8 +19,8 @@ close all
 
 %% Set paths to data and output
 projectDir=getpref('surveyMelanopsinAnalysis', 'projectDir');
-sourceDir = '~/Desktop/POEM_v1.1s_Analysis/';
-outputDir = '~/Desktop/POEM_v1.1s_Analysis/';
+sourceDir = '~/Box Sync/MELA_Protected/POEM_v1.1s_Analysis/';
+outputDir = '~/Box Sync/MELA_Protected/POEM_v1.1s_Analysis/';
 
 % If the output directory does not exist, create it
 if ~exist(outputDir,'dir')
@@ -28,7 +28,7 @@ if ~exist(outputDir,'dir')
 end
 
 % Set filenames
-qualtricsDataFile = fullfile(sourceDir,'POEM_v1.1s_March 12, 2018_15.49.csv');
+qualtricsDataFile = fullfile(sourceDir,'POEM_v1.1s_raw.csv');
 outputResultExcelName=fullfile(outputDir,'POEM_v1.1s_results.xlsx');
 
 
