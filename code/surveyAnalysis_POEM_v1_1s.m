@@ -38,6 +38,11 @@ outputResultExcelName=fullfile(outputDir,'POEM_v1.1s_results.xlsx');
 
 %% classify headache based upon table T
 diagnosisTable = poemAnalysis_classify( T );
+
+%% Add the end date to the diagnosis table
+diagnosisTable.EndDate = T.EndDate;
+
+%% Save the diagnosis table
 writetable(diagnosisTable,outputResultExcelName,'Range','A4','WriteRowNames',true)
 
 
