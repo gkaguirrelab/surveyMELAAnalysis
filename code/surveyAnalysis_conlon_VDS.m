@@ -60,7 +60,7 @@ if isempty(subjectIDIdx)
 end
 
 % Convert the text responses to integers. Sadly, this
-% has to be done in a loop as Matlah does not have a way to address an
+% has to be done in a loop as Matlab does not have a way to address an
 % array of dynamically identified field names of a structure
 
 % The group2index converts the list of text responses into integer values
