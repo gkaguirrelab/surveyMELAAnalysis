@@ -31,9 +31,10 @@ spreadSheetSet={'MELA Demographics Form v1.1 (Responses) Queried.xlsx',...
     'MELA Substance and Medicine Questionnaire v1.1 (Responses) Queried.xlsx',...
     'MELA Sleep Quality Questionnaire v1.2 (Responses) Queried.xlsx',...
     'MELA Squint Post-Session Questionnaire (Responses) Queried.xlsx',...
-    'MELA Headache and Comorbid Disorders Screening Form v1.0 (Responses) Queried.xlsx'};%,...
-%    'MELA_Morningness Eveningness Questionnaire v1.0 (Responses) Queried.xlsx'};
+    'MELA Headache and Comorbid Disorders Screening Form v1.0 (Responses) Queried.xlsx',...
+    'MELA_Morningness Eveningness Questionnaire v1.0 (Responses) Queried.xlsx'};
 
+handleMissingRowsFlag = [true,true,true,true,true,true,true,true,false];
 
 %% Silence some expected warnings
 warningState = warning;
@@ -47,7 +48,7 @@ warning('off','MATLAB:xlswrite:AddSheet');
 % Run through once to compile the subjectIDList. 
 for ii=1:length(spreadSheetSet)
     spreadSheetName=fullfile(dropboxDir, surveyDir, spreadSheetSet{ii});
-    T = surveyAnalysis_preProcess(spreadSheetName);
+    T = surveyAnalysis_preProcess(spreadSheetName,handleMissingRowsFlag(ii));
     if ii==1
         subjectIDList=cell2table(T.SubjectID);
     else
@@ -64,7 +65,7 @@ clear tmpFill
 % Run through again and save the compiled spreadsheet
 for ii=1:length(spreadSheetSet)
     spreadSheetName=fullfile(dropboxDir, surveyDir, spreadSheetSet{ii});
-    [T, notesText] = surveyAnalysis_preProcess(spreadSheetName);
+    [T, notesText] = surveyAnalysis_preProcess(spreadSheetName,handleMissingRowsFlag(ii));
     % Set each table to have the same subjectID list
     T = outerjoin(subjectIDList,T);
     % Write the table data

@@ -1,4 +1,4 @@
-function [T, notesText] = surveyAnalysis_preProcess(spreadSheetName)
+function [T, notesText] = surveyAnalysis_preProcess(spreadSheetName, mergeRowsWithoutID)
 % function [T, notesText] = makeSpreadSheetTable(spreadSheetName)
 %
 %  Loads Excel spreadsheets into which Google Sheets survey data has been
@@ -12,11 +12,16 @@ function [T, notesText] = surveyAnalysis_preProcess(spreadSheetName)
 %   notesText: A cell array with notes regarding the table conversion
 %
 
+%% Handle missing input arguments
+if nargin == 1
+    mergeRowsWithoutID = true;
+end
+
 %% Hardcoded variables and housekeeping
 joinDelimiter='; ';
 notesText=cellstr(spreadSheetName);
 
-subjectIDVarieties={'SubjectID_','SubjectName','SubjectNumber','SubjectID'};
+subjectIDVarieties={'SubjectID_','SubjectName','SubjectNumber','SubjectID','SubjectID:'};
 subjectIDLabel='SubjectID';
 
 %% Read in the table. Suppress some routine warnings.
@@ -61,32 +66,38 @@ if isempty(idx)
     notesText=[notesText,cellstr(warningText)];
 end
 
-% If a row lacks a subject ID, the values in the row are to be joined
-% with values in the first row above that has a subject ID. This is because
-% the Google spreadhseet will save a list of responses for an item as
-% multiple rows in a column
-idxRowsToJoin=find(ismissing(T.SubjectID));
-if ~isempty(idxRowsToJoin)
-    for ii=length(idxRowsToJoin):-1:1
-        % Check that the concatenation is only for strings
-        notEmptyColumns=find(~ismissing(T(idxRowsToJoin(ii),:)));
-        if ~iscellstr(table2cell(T(idxRowsToJoin(ii),notEmptyColumns)))
-            errorText=['Row ' strtrim(num2str(idxRowsToJoin(ii))) ' has no Subject ID and has non-string entries that cannot be concatenated with other rows.'];
-            error(errorText);
-        end
-        % Loop over columns and join the strings into the row above
-        for jj=1:length(notEmptyColumns)
-            tableCellsToJoin = T(idxRowsToJoin(ii)-1:idxRowsToJoin(ii),notEmptyColumns(jj));
-            joinedText=strjoin(table2cell(tableCellsToJoin),joinDelimiter);
-            T{idxRowsToJoin(ii)-1,notEmptyColumns(jj)} = cellstr(joinedText);
-        end
-    end % Loop over rows to join
-    % Remove the rows whose contents have been joined to rows with a subject ID
-    T(idxRowsToJoin,:)=[];
-    % Assemble the notesText
-    warningText=['The text from rows ' num2str(idxRowsToJoin') ' was merged into the next row above.'];
-    notesText=[notesText,cellstr(warningText)];
-end % There are rows to join
+% Handle rows with missing subject ID
+idxRowsWithoutID=find(ismissing(T.SubjectID));
+if ~isempty(idxRowsWithoutID)
+    if mergeRowsWithoutID
+        % If a row lacks a subject ID, the values in the row are to be
+        % joined with values in the first row above that has a subject ID.
+        % This is because the Google spreadhseet will save a list of
+        % responses for an item as multiple rows in a column
+        for ii=length(idxRowsWithoutID):-1:1
+            % Check that the concatenation is only for strings
+            notEmptyColumns=find(~ismissing(T(idxRowsWithoutID(ii),:)));
+            if ~iscellstr(table2cell(T(idxRowsWithoutID(ii),notEmptyColumns)))
+                errorText=['Row ' strtrim(num2str(idxRowsWithoutID(ii))) ' has no Subject ID and has non-string entries that cannot be concatenated with other rows.'];
+                error(errorText);
+            end
+            % Loop over columns and join the strings into the row above
+            for jj=1:length(notEmptyColumns)
+                tableCellsToJoin = T(idxRowsWithoutID(ii)-1:idxRowsWithoutID(ii),notEmptyColumns(jj));
+                joinedText=strjoin(table2cell(tableCellsToJoin),joinDelimiter);
+                T{idxRowsWithoutID(ii)-1,notEmptyColumns(jj)} = cellstr(joinedText);
+            end
+        end % Loop over rows to join
+        % Remove the rows whose contents have been joined to rows with a subject ID
+        T(idxRowsWithoutID,:)=[];
+        % Assemble the notesText
+        warningText=['The text from rows ' num2str(idxRowsWithoutID') ' was merged into the next row above.'];
+        notesText=[notesText,cellstr(warningText)];
+    else
+        % Remove the rows without an ID
+        T = T(~ismissing(T.SubjectID),:);
+    end % Handle the mergeRowsWithoutID flag
+end % There are rows without an ID
 
 % Find duplicate subject IDs and merge their data
 [uniqueIDs,idxInUniqueOfTable,idxInTableOfUnique] = unique(T.SubjectID);
@@ -124,6 +135,8 @@ for ii=1:length(uniqueIDs)
         notesText=[notesText,cellstr(warningText)];
     end % Duplicate subject IDs were found
 end % Loop through the unique subject IDs
+
+
 T=T(idxInUniqueOfTable,:);
 
 % Assign subject ID as the row name property for the table
