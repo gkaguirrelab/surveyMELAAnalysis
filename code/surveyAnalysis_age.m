@@ -5,7 +5,7 @@ function [ scoreTable, summaryMeasureFieldName ] = surveyAnalysis_age( T )
 
 subjectIDField={'SubjectID_subjectIDList'};
 
-summaryMeasureFieldName='Age';
+summaryMeasureFieldName='Age_years';
 
 YoB='YearOfBirth_';
 timestamp='Timestamp';
