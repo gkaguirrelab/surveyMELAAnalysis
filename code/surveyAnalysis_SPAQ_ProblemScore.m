@@ -1,24 +1,36 @@
-function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_PAQ_philia( T )
+function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_SPAQ_ProblemScore( T )
+% function [ processedTable ] = surveyAnalysis_SPAQ( T )
 %
-% Details regarding this measure here
-
+% Details regarding the SPAQ here
+%
+%   Rosenthal, N. E., G. H. Bradt, and T. A. Wehr. "Seasonal pattern
+%   assessment questionnaire." Bethesda, MD: National Institute of Mental
+%   Health (1984).
+%
+% This routine calculates The Global Seasonality Score (GSS) is the total
+% sum of the 6 items on Question 11. This gives a score from 0 (no
+% seasonality) to 24 (extreme seasonality). The average GSS in community
+% samples is about 5. The average GSS in patients with SAD is about 16. The
+% screening criteria for a ?diagnosis? of SAD are based on the GSS and the
+% score on Question 17, the degree of problems associated with seasonal
+% changes. A GSS of 11 or higher and a score on Q.17 of moderate or greater
+% is indicative of SAD. As with most screening questionnaires, these
+% criteria tend to overdiagnose SAD. On clinical interview, some people
+% with these criteria will turn out to have subsyndromal features. On the
+% other hand, very few people with a true diagnosis of SAD will be missed
+% using these criteria.
+%
 subjectIDField={'SubjectID'};
 
-summaryMeasureFieldName='PAQ_philia';
+summaryMeasureFieldName='Rosenthal_1984_SPAQ_ProblemScore';
 
-questions={...
-'IPreferSummerToWinterBecauseWinterDrearinessMakesMeSad_',...
-'OftenInWinter_I_dLikeToGoToTheOtherHemisphereWhereItIsSummerTim',...
-'MyIdealHouseHasLargeWindows_',...
-'ILikeCloudyDays_',...
-'IFeelRebornInSpringWhenTheDaysStartToBecomeLonger_',...
-'IPreferSunlightToSemi_darkness_',...
-'SunlightIsLikeTherapyForMe_',...
-'IPreferWalkingInTheSunlightIfTheWeatherIsCool_',...
-    };
+questions={'IfYouAnsweredYesToThePreviousQuestion_PleaseSpecifyOnAScaleFrom'};
 
-textResponses={'Disagree',...
-'Agree'};
+textResponses={'Does Not Apply',...
+'1. Mild',...
+'2. Moderate',...
+'3. Marked',...
+'4. Severe'};
 
 % This is the offset between the index number of the textResponses
 % [1, 2, 3, ...] and the assigned score value (e.g.) [0, 1, 2, ...]
@@ -43,21 +55,19 @@ if isempty(subjectIDIdx)
 end
 
 % Convert the text responses to integers. Sadly, this
-% has to be done in a loop as Matlah does not have a way to address an
+% has to be done in a loop as Matlab does not have a way to address an
 % array of dynamically identified field names of a structure
+
+% The group2index converts the list of text responses into integer values
 for qq=1:length(questions)
     T.(questions{qq})=grp2idx(categorical(T.(questions{qq}),textResponses,'Ordinal',true))+scoreOffset;
 end
 
-% Calculate the score.
+% Calculate the GSS score.
 % Sum (instead of nansum) is used so that the presence of any NaN values in
 % the responses for a subject result in an undefined total score.
 scoreMatrix=table2array(T(:,questionIndices));
 sumScore=sum(scoreMatrix,2);
-
-% The PAQ is normalized by the number of questions (so is on a scale of
-% 0-1)
-sumScore=sumScore/length(questions);
 
 % Create a little table with the subject IDs and scores
 scoreColumn = num2cell(sumScore);

@@ -1,9 +1,9 @@
 function [ scoreTable, summaryMeasureFieldName ] = surveyAnalysis_HAfreq( T )
 %
 
-subjectIDField={'SubjectID_subjectIDList'};
+subjectIDField={'SubjectID'};
 
-summaryMeasureFieldName='HAdays';
+summaryMeasureFieldName='HAdaysPer3Months';
 
 question='OnHowManyDaysInTheLast3MonthsDidYouHaveAHeadache__IfAHeadacheLa';
 
@@ -23,10 +23,11 @@ end
 
 HA_freq=T.(question);
 
-% Create a little table with the subject IDs and number of HA days in last
-% 3 months
+% Create a little table with the subject IDs and scores
+scoreColumn = num2cell(HA_freq);
+scoreColumn(cellfun(@isnan,scoreColumn)) = {[]};
 scoreTable=T(:,subjectIDIdx);
-scoreTable=[scoreTable,cell2table(num2cell(HA_freq))];
+scoreTable=[scoreTable,cell2table(scoreColumn)];
 scoreTable.Properties.VariableNames{2}=summaryMeasureFieldName;
 
 end

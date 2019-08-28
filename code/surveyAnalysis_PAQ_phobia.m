@@ -2,7 +2,7 @@ function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_P
 %
 % Details regarding this measure here
 
-subjectIDField={'SubjectID_subjectIDList'};
+subjectIDField={'SubjectID'};
 
 summaryMeasureFieldName='PAQ_phobia';
 
@@ -60,9 +60,12 @@ sumScore=sum(scoreMatrix,2);
 sumScore=sumScore/length(questions);
 
 % Create a little table with the subject IDs and scores
+scoreColumn = num2cell(sumScore);
+scoreColumn(cellfun(@isnan,scoreColumn)) = {[]};
 scoreTable=T(:,subjectIDIdx);
-scoreTable=[scoreTable,cell2table(num2cell(sumScore))];
+scoreTable=[scoreTable,cell2table(scoreColumn)];
 scoreTable.Properties.VariableNames{2}=summaryMeasureFieldName;
+
 
 % Create a table of the values
 valuesTable=T(:,subjectIDIdx);

@@ -2,7 +2,7 @@ function [scoreTable, summaryMeasureFieldName] = surveyAnalysis_race(T)
 %
 % Details regarding this measure here
 
-subjectIDField={'SubjectID_subjectIDList'};
+subjectIDField={'SubjectID'};
 
 summaryMeasureFieldName='Race';
 

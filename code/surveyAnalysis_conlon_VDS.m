@@ -4,7 +4,7 @@ function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_c
 % Details regarding the VDS here
 %
 
-subjectIDField={'SubjectID_subjectIDList'};
+subjectIDField={'SubjectID'};
 
 summaryMeasureFieldName='Conlon_1999_VDS';
 
@@ -74,9 +74,11 @@ end
 scoreMatrix=table2array(T(:,questionIndices));
 sumScore=sum(scoreMatrix,2);
 
-% Create a little table with the subject IDs and VDS scores
+% Create a little table with the subject IDs and scores
+scoreColumn = num2cell(sumScore);
+scoreColumn(cellfun(@isnan,scoreColumn)) = {[]};
 scoreTable=T(:,subjectIDIdx);
-scoreTable=[scoreTable,cell2table(num2cell(sumScore))];
+scoreTable=[scoreTable,cell2table(scoreColumn)];
 scoreTable.Properties.VariableNames{2}=summaryMeasureFieldName;
 
 % Create a table of the values

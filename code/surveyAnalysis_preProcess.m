@@ -140,7 +140,7 @@ end % Loop through the unique subject IDs
 T=T(idxInUniqueOfTable,:);
 
 % Assign subject ID as the row name property for the table
-T.Properties.RowNames=T.SubjectID;
+%T.Properties.RowNames=T.SubjectID;
 
 % Transpose the notesText for ease of subsequent display
 notesText=notesText';

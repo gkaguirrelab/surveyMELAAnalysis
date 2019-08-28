@@ -3,7 +3,7 @@ function [ scoreTable, summaryMeasureFieldName ] = surveyAnalysis_age( T )
 % Details regarding the VDS here
 %
 
-subjectIDField={'SubjectID_subjectIDList'};
+subjectIDField={'SubjectID'};
 
 summaryMeasureFieldName='Age_years';
 

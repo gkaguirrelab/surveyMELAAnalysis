@@ -28,13 +28,14 @@ spreadSheetSet={'MELA Demographics Form v1.1 (Responses) Queried.xlsx',...
     'MELA Screening v1.1 (Responses) Queried.xlsx',...
     'MELA Vision Test Performance v1.0 Queried.xlsx',...
     'MELA Visual and Seasonal Sensitivity v1.4 (Responses) Queried.xlsx',...
+    'Old version responses/v1.3/MELA Visual and Seasonal Sensitivity v1.3 (Responses) Queried.xlsx',...
     'MELA Substance and Medicine Questionnaire v1.1 (Responses) Queried.xlsx',...
     'MELA Sleep Quality Questionnaire v1.2 (Responses) Queried.xlsx',...
     'MELA Squint Post-Session Questionnaire (Responses) Queried.xlsx',...
     'MELA Headache and Comorbid Disorders Screening Form v1.0 (Responses) Queried.xlsx',...
     'MELA_Morningness Eveningness Questionnaire v1.0 (Responses) Queried.xlsx'};
 
-handleMissingRowsFlag = [true,true,true,true,true,true,true,true,false];
+handleMissingRowsFlag = [true,true,true,true,true,true,true,true,true,false];
 
 %% Silence some expected warnings
 warningState = warning;
@@ -45,7 +46,7 @@ warning('off','MATLAB:xlswrite:AddSheet');
 
 %% Create and save tables
 
-% Run through once to compile the subjectIDList. 
+% Run through once to compile the subjectIDList.
 for ii=1:length(spreadSheetSet)
     spreadSheetName=fullfile(dropboxDir, surveyDir, spreadSheetSet{ii});
     T = surveyAnalysis_preProcess(spreadSheetName,handleMissingRowsFlag(ii));
@@ -67,7 +68,7 @@ for ii=1:length(spreadSheetSet)
     spreadSheetName=fullfile(dropboxDir, surveyDir, spreadSheetSet{ii});
     [T, notesText] = surveyAnalysis_preProcess(spreadSheetName,handleMissingRowsFlag(ii));
     % Set each table to have the same subjectID list
-    T = outerjoin(subjectIDList,T);
+    T = outerjoin(subjectIDList,T,'Keys','SubjectID','MergeKeys',true);
     % Write the table data
     writetable(T,outputRawExcelName,'Range','A4','WriteRowNames',true,'Sheet',ii)
     % Put the name of this spreadsheet at the top of the sheet
@@ -79,7 +80,8 @@ for ii=1:length(spreadSheetSet)
         writetable(cell2table(notesText),outputRawExcelName,'WriteVariableNames',false,'Range',cornerRange,'Sheet',ii)
     end
     % Save the table into a a structure with an informative field name
-    tmp=strsplit(spreadSheetSet{ii},' ');
+    tmp=strsplit(spreadSheetSet{ii},'/');
+    tmp=strsplit(tmp{end},' ');
     fieldName=strjoin(tmp(2:end),'_');
     fieldName=strrep(fieldName, '.', '_');
     fieldName=strrep(fieldName, '-', '_');
@@ -94,37 +96,43 @@ end
 
 % Create a result table
 
-% Basic demographics: Age, sex, race, ethnicity
-[tmpScoreTable] = surveyAnalysis_age(compiledTable.(tableFieldNames{1}));
-scoreTable=tmpScoreTable;
+% Basic demographics
+functionNames = {'surveyAnalysis_age','surveyAnalysis_sex','surveyAnalysis_race','surveyAnalysis_ethnicity'};
+for ii = 1:length(functionNames)
+    [tmpScoreTable] = feval(functionNames{ii},compiledTable.(tableFieldNames{1}));
+    if ii==1
+        scoreTable=tmpScoreTable;
+    else
+        scoreTable=innerjoin(scoreTable,tmpScoreTable);
+    end
+end
 
-[tmpScoreTable] = surveyAnalysis_sex( compiledTable.(tableFieldNames{1}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
+% Scores
+functionNames = {'surveyAnalysis_ACHOO','surveyAnalysis_conlon_VDS','surveyAnalysis_PAQ_phobia',...
+    'surveyAnalysis_PAQ_philia','surveyAnalysis_SPAQ_GSS','surveyAnalysis_SPAQ_ProblemScore',...
+    'surveyAnalysis_MEQ','surveyAnalysis_HAfreq'};
+whichTableToPass = {[4,5],[4,5],[4,5],[4,5],[4,5],[4,5],10,9};
+for ii = 1:length(functionNames)
+    % obtain the table to pass
+    tableSet = whichTableToPass{ii};
+    for kk = 1:length(tableSet)
+        thisTable = compiledTable.(tableFieldNames{tableSet(kk)});
+        thisScoreTable = feval(functionNames{ii},thisTable);
+        if kk == 1
+            tmpScoreTable = thisScoreTable;
+        else
+            % Fill in missing values with the subsequent sheet
+            missingVals = cellfun(@(x) isempty(x),table2cell(tmpScoreTable(:,2)));
+            tmpScoreTable(missingVals,2)=thisScoreTable(missingVals,2);
+        end
+    end
+    if ii==1
+        scoreTable=innerjoin(scoreTable,tmpScoreTable);
+    else
+        scoreTable=innerjoin(scoreTable,tmpScoreTable);
+    end
+end
 
-[tmpScoreTable] = surveyAnalysis_race( compiledTable.(tableFieldNames{1}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
-
-[tmpScoreTable] = surveyAnalysis_ethnicity( compiledTable.(tableFieldNames{1}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
-
-% Photic sneeze
-[tmpScoreTable, tmpValuesTable] = surveyAnalysis_ACHOO( compiledTable.(tableFieldNames{4}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
-valuesTable=tmpValuesTable;
-
-% Conlon Visual Discomfort Scale
-[tmpScoreTable, tmpValuesTable] = surveyAnalysis_conlon_VDS( compiledTable.(tableFieldNames{4}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
-valuesTable=innerjoin(valuesTable,tmpValuesTable);
-
-% PAQ photophobia/philia score
-[tmpScoreTable, tmpValuesTable] = surveyAnalysis_PAQ_phobia( compiledTable.(tableFieldNames{4}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
-valuesTable=innerjoin(valuesTable,tmpValuesTable);
-
-[tmpScoreTable, tmpValuesTable] = surveyAnalysis_PAQ_philia( compiledTable.(tableFieldNames{4}) );
-scoreTable=innerjoin(scoreTable,tmpScoreTable);
-valuesTable=innerjoin(valuesTable,tmpValuesTable);
 
 clear tmpScoreTable
 clear tmpValuesTable
