@@ -16,6 +16,9 @@ userName = strtrim(userName);
 dropboxDir = ...
     fullfile('/Users', userName, '/Dropbox (Aguirre-Brainard Lab)');
 
+%% The Squint subject list:
+squintSubjects = {'MELA_0119';'MELA_0120';'MELA_0121';'MELA_0122';'MELA_0124';'MELA_0126';'MELA_0128';'MELA_0129';'MELA_0130';'MELA_0131';'MELA_0137';'MELA_0138';'MELA_0139';'MELA_0140';'MELA_0143';'MELA_0147';'MELA_0150';'MELA_0152';'MELA_0153';'MELA_0155';'MELA_0157';'MELA_0158';'MELA_0160';'MELA_0163';'MELA_0164';'MELA_0166';'MELA_0167';'MELA_0168';'MELA_0169';'MELA_0170';'MELA_0171';'MELA_0174';'MELA_0175';'MELA_0177';'MELA_0179';'MELA_0181';'MELA_0187';'MELA_0191';'MELA_0192';'MELA_0194';'MELA_0196';'MELA_0198';'MELA_0201';'MELA_0203';'MELA_0204';'MELA_0205';'MELA_0206';'MELA_0207';'MELA_0208';'MELA_0209';'MELA_0213';'MELA_0214';'MELA_0215';'MELA_0216';'MELA_0218';'MELA_0219';'MELA_0220';'MELA_0221';'MELA_0222';'MELA_0223'};
+
 %% Set paths to surveys and output
 surveyDir = '/MELA_subject/Google_Doc_Sheets/';
 analysisDir = '/MELA_analysis/surveyMelanopsinAnalysis/';
@@ -23,6 +26,7 @@ analysisDir = '/MELA_analysis/surveyMelanopsinAnalysis/';
 % Set the output filenames
 outputRawExcelName=fullfile(dropboxDir, analysisDir, 'MELA_RawSurveyData.xlsx');
 outputResultExcelName=fullfile(dropboxDir, analysisDir, 'MELA_ScoresSurveyData.xlsx');
+outputMatchResultExcelName=fullfile(dropboxDir, analysisDir, 'MELA_ScoresSurveyData_Squint.xlsx');
 
 spreadSheetSet={'MELA Demographics Form v1.1 (Responses) Queried.xlsx',...
     'MELA Screening v1.1 (Responses) Queried.xlsx',...
@@ -133,6 +137,10 @@ for ii = 1:length(functionNames)
     end
 end
 
+% Filter the scoreTable to just include the Squint subjects
+squintSubjectsTable = table();
+squintSubjectsTable.SubjectID = squintSubjects;
+matchedScoreTable = innerjoin(scoreTable,squintSubjectsTable);
 
 clear tmpScoreTable
 clear tmpValuesTable
@@ -147,6 +155,11 @@ notesText{3}=['User: ' userName];
 writetable(scoreTable,outputResultExcelName,'Range','A4','WriteRowNames',true,'Sheet',1)
 cornerRange=['A' strtrim(num2str(size(scoreTable,1)+7))];
 writetable(cell2table(notesText'),outputResultExcelName,'WriteVariableNames',false,'Range',cornerRange,'Sheet',1)
+
+writetable(matchedScoreTable,outputMatchResultExcelName,'Range','A4','WriteRowNames',true,'Sheet',1)
+cornerRange=['A' strtrim(num2str(size(matchedScoreTable,1)+7))];
+writetable(cell2table(notesText'),outputMatchResultExcelName,'WriteVariableNames',false,'Range',cornerRange,'Sheet',1)
+
 
 % Restore the warning state
 warning(warningState);
