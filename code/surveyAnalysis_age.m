@@ -32,11 +32,11 @@ if isempty(tmp)
 end
 
 % Calculate the difference between YoB and timestamp in years.
-age=caldiff([datetime(T.(YoB),1,1),T.(timestamp)]','years')';
+ageInYears=calyears(caldiff([datetime(T.(YoB),1,1),T.(timestamp)]','years')');
 
 % Create a little table with the subject IDs and ages
 scoreTable=T(:,subjectIDIdx);
-scoreTable=[scoreTable,cell2table(num2cell(age))];
+scoreTable=[scoreTable,cell2table(num2cell(ageInYears))];
 scoreTable.Properties.VariableNames{2}=summaryMeasureFieldName;
 
 end
