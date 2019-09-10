@@ -28,7 +28,8 @@ outputRawExcelName=fullfile(dropboxDir, analysisDir, 'MELA_RawSurveyData.xlsx');
 outputResultExcelName=fullfile(dropboxDir, analysisDir, 'MELA_ScoresSurveyData.xlsx');
 outputMatchResultExcelName=fullfile(dropboxDir, analysisDir, 'MELA_ScoresSurveyData_Squint.xlsx');
 
-spreadSheetSet={'MELA Demographics Form v1.1 (Responses) Queried.xlsx',...
+spreadSheetSet={'../MELA_Squint_Subject_Info.xlsx',...
+    'MELA Demographics Form v1.1 (Responses) Queried.xlsx',...
     'MELA Screening v1.1 (Responses) Queried.xlsx',...
     'MELA Vision Test Performance v1.0 Queried.xlsx',...
     'MELA Visual and Seasonal Sensitivity v1.4 (Responses) Queried.xlsx',...
@@ -39,7 +40,9 @@ spreadSheetSet={'MELA Demographics Form v1.1 (Responses) Queried.xlsx',...
     'MELA Headache and Comorbid Disorders Screening Form v1.0 (Responses) Queried.xlsx',...
     'MELA_Morningness Eveningness Questionnaire v1.0 (Responses) Queried.xlsx'};
 
-handleMissingRowsFlag = [true,true,true,true,true,true,true,true,true,false];
+handleMissingRowsFlag = [true,true,true,true,true,true,true,true,true,true,false];
+
+demographicTableIdx = 2;
 
 %% Silence some expected warnings
 warningState = warning;
@@ -85,7 +88,7 @@ for ii=1:length(spreadSheetSet)
     end
     % Save the table into a a structure with an informative field name
     tmp=strsplit(spreadSheetSet{ii},'/');
-    tmp=strsplit(tmp{end},' ');
+    tmp=strsplit(tmp{end},{' ','_'});
     fieldName=strjoin(tmp(2:end),'_');
     fieldName=strrep(fieldName, '.', '_');
     fieldName=strrep(fieldName, '-', '_');
@@ -98,10 +101,9 @@ for ii=1:length(spreadSheetSet)
 end
 
 
-% Create a result table
-
-% Basic demographics
-functionNames = {'surveyAnalysis_age','surveyAnalysis_sex','surveyAnalysis_race','surveyAnalysis_ethnicity'};
+%% Create a result table
+% Diagnosis
+functionNames = {'surveyAnalysis_diagnosis'};
 for ii = 1:length(functionNames)
     [tmpScoreTable] = feval(functionNames{ii},compiledTable.(tableFieldNames{1}));
     if ii==1
@@ -111,11 +113,19 @@ for ii = 1:length(functionNames)
     end
 end
 
+
+% Basic demographics
+functionNames = {'surveyAnalysis_age','surveyAnalysis_sex','surveyAnalysis_race','surveyAnalysis_ethnicity'};
+for ii = 1:length(functionNames)
+    [tmpScoreTable] = feval(functionNames{ii},compiledTable.(tableFieldNames{demographicTableIdx}));
+    scoreTable=innerjoin(scoreTable,tmpScoreTable);
+end
+
 % Scores
 functionNames = {'surveyAnalysis_ACHOO','surveyAnalysis_conlon_VDS','surveyAnalysis_PAQ_phobia',...
     'surveyAnalysis_PAQ_philia','surveyAnalysis_SPAQ_GSS','surveyAnalysis_SPAQ_ProblemScore',...
     'surveyAnalysis_MEQ','surveyAnalysis_HAfreq'};
-whichTableToPass = {[4,5],[4,5],[4,5],[4,5],[4,5],[4,5],10,9};
+whichTableToPass = {[5,6],[5,6],[5,6],[5,6],[5,6],[5,6],11,10};
 for ii = 1:length(functionNames)
     % obtain the table to pass
     tableSet = whichTableToPass{ii};
