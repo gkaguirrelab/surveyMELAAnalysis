@@ -1,6 +1,10 @@
 function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_PAQ_phobia( T )
 %
 % Details regarding this measure here
+%
+%   Bossini, L., Fagiolini, A., Valdagno, M., Padula, L., Hofkens, T., &
+%   Castrogiovanni, P. (2009). Photosensitivity in panic disorder.
+%   Depression and anxiety, 26(1), E34-E36.
 
 subjectIDField={'SubjectID'};
 
