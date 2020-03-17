@@ -1,4 +1,4 @@
-function surveyMelanopsinAnalysisLocalHook
+function surveyMELAAnalysisLocalHook
 % surveyMelanopsinAnalysisLocalHook
 %
 % Configure things for processing MELA project surveys.
@@ -15,13 +15,13 @@ function surveyMelanopsinAnalysisLocalHook
 % to match what is true on your computer.
 
 %% Say hello
-fprintf('Running surveyMelanopsinAnalysisLocalHook\n');
+fprintf('Running surveyMELAAnalysisLocalHook\n');
 
 %% Set preferences
 
 % Find the project directory, add it to the path, save this as a
 %  pref, and then make this the current directory
-projectDir = fullfile(tbLocateProject('surveyMelanopsinAnalysis'));
+projectDir = fullfile(tbLocateProject('surveyMELAAnalysis'));
 addpath(genpath(projectDir));
-setpref('surveyMelanopsinAnalysis', 'projectDir', projectDir);
+setpref('surveyMELAAnalysis', 'projectDir', projectDir);
 cd(projectDir);
