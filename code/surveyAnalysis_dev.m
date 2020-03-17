@@ -104,13 +104,18 @@ end
 %% Create a result table
 
 % Scores
-functionNames = {'surveyAnalysis_HAfreq'};
-whichTableToPass = {10};
+functionNames = {'surveyAnalysis_HAfreq','surveyAnalysis_HIT6'};
+whichTableToPass = {10,10};
 for ii = 1:length(functionNames)
     % obtain the table to pass
     tableSet = whichTableToPass{ii};
     for kk = 1:length(tableSet)
         thisTable = compiledTable.(tableFieldNames{tableSet(kk)});
+        
+        % Briana --- Add a stop at the next line. Inspect the column
+        % headers of the variable "thisTable". Add the column headers that
+        % correspond to the HIT6 to the cell array in the HIT6 function.
+        
         thisScoreTable = feval(functionNames{ii},thisTable);
         if kk == 1
             tmpScoreTable = thisScoreTable;
@@ -126,6 +131,10 @@ for ii = 1:length(functionNames)
         scoreTable=innerjoin(scoreTable,tmpScoreTable);
     end
 end
+
+% Briana -- You could add a stop after this point and inspect the contents
+% of "scoreTable", and make sure that the HIT6 scores are what you think
+% they should be.
 
 % Restore the warning state
 warning(warningState);
