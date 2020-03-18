@@ -124,8 +124,8 @@ end
 % Scores
 functionNames = {'surveyAnalysis_ACHOO','surveyAnalysis_conlon_VDS','surveyAnalysis_PAQ_phobia',...
     'surveyAnalysis_PAQ_philia','surveyAnalysis_SPAQ_GSS','surveyAnalysis_SPAQ_ProblemScore',...
-    'surveyAnalysis_MEQ','surveyAnalysis_HAfreq'};
-whichTableToPass = {[5,6],[5,6],[5,6],[5,6],[5,6],[5,6],11,10};
+    'surveyAnalysis_MEQ','surveyAnalysis_HAfreq','surveyAnalysis_HIT6','surveyAnalysis_MIDAS'};
+whichTableToPass = {[5,6],[5,6],[5,6],[5,6],[5,6],[5,6],11,10,10,10};
 for ii = 1:length(functionNames)
     % obtain the table to pass
     tableSet = whichTableToPass{ii};
