@@ -3,9 +3,15 @@ function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_H
 %
 % HEADACHE IMPACT TEST (HIT-6)
 %
-% Designed to help describe and communicate the way a subject feels and 
-% what they cannot do because of headaches.
-% More details regarding the HIT6 here, including a citation for the survey
+% Scores can range from 36-78, indicating the following impact headaches
+% have on the patient's life:
+%
+% >= 60 Severe
+% 56-59 Substantial
+% 50-55 Some
+% <= 49 Little to None
+%
+% *citation for the survey*
 %
 
 subjectIDField={'SubjectID'};

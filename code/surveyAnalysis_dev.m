@@ -104,7 +104,7 @@ end
 %% Create a result table
 
 % Scores
-functionNames = {'surveyAnalysis_HIT6'};
+functionNames = {'surveyAnalysis_MIDAS'};
 whichTableToPass = {10,10};
 for ii = 1:length(functionNames)
     % obtain the table to pass

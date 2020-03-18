@@ -1,31 +1,27 @@
 function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_MIDAS( T )
-% function [ processedTable ] = surveyAnalysis_HIT6( T )
+% function [ processedTable ] = surveyAnalysis_MIDAS( T )
 %
-% Details regarding the MIDAS here, including a citation for the survey
+% THE MIGRAINE DISABILITY ASSESSMENT (MIDAS)
+% 
+% Scores are interpreted as follows:
 %
+% 0-5 Little to no disability
+% 6-10 Mild disability
+% 11-20 Moderate disability
+% 21+ Severe disability
+%
+% *citation for the survey*
 
 subjectIDField={'SubjectID'};
 
 summaryMeasureFieldName='MIDAS';
 
 % Add the question text here
-questions={'WhenYouHaveHeadaches_HowOftenIsThePainSevere___',...
-    'HowOftenDoHeadachesLimitYourAbilityToDoUsualDailyActivitiesIncl',...
-    'WhenYouHaveAHeadache_HowOftenDoYouWishYouCouldLieDown___',...    
-    'InThePast4Weeks_HowOftenHaveYouFeltTooTiredToDoWorkOrDailyActiv',...
-    'InThePast4Weeks_HowOftenHaveYouFeltFedUpOrIrritatedBecauseOfYou',...
-    'InThePast4Weeks_HowOftenDidHeadachesLimitYourAbilityToConcentra'};
-
-textResponses={'Never',...  % 6
-'Rarely',...  % 8
-'Sometimes',...  % 10
-'Very Often',...  % 11
-'Always'};  % 13
-
-% This is an anonymous function that converts index values to the weirdo
-% scores used by the HIT6
-myScore = @(x) (x.*2+4)-floor(x./4);
-
+questions={'OnHowManyDaysInTheLast3MonthsDidYouMissWorkOrSchoolBecauseOfYou',...
+    'HowManyDaysInTheLast3MonthsWasYourProductivityAtWorkOrSchoolRed',...
+    'OnHowManyDaysInTheLast3MonthsDidYouNotDoHouseholdWork_suchAsHou',...    
+    'HowManyDaysInTheLast3MonthsWasYourProductivityInHouseholdWorkRe',...
+    'OnHowManyDaysInTheLast3MonthsDidYouMissFamily_SocialOrLeisureAc'};
 
 % Loop through the questions and build the list of indices
 for qq=1:length(questions)
@@ -45,20 +41,7 @@ if isempty(subjectIDIdx)
     error(errorText);
 end
 
-% Convert the text responses to integers. Sadly, this
-% has to be done in a loop as Matlab does not have a way to address an
-% array of dynamically identified field names of a structure
-%
-% We get the index of the response, and then convert this to the value
-% given in scoreVals.
-
-% The group2index converts the list of text responses into integer values
-for qq=1:length(questions)
-    responseIdx = grp2idx(categorical(T.(questions{qq}),textResponses,'Ordinal',true));
-    T.(questions{qq})=myScore(responseIdx);
-end
-
-% Calculate the HIT6 score.
+% Calculate the MIDAS score.
 % Sum (instead of nansum) is used so that the presence of any NaN values in
 % the responses for a subject result in an undefined total score.
 scoreMatrix=table2array(T(:,questionIndices));
