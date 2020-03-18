@@ -1,16 +1,12 @@
-function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_HIT6( T )
+function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_MIDAS( T )
 % function [ processedTable ] = surveyAnalysis_HIT6( T )
 %
-% HEADACHE IMPACT TEST (HIT-6)
-%
-% Designed to help describe and communicate the way a subject feels and 
-% what they cannot do because of headaches.
-% More details regarding the HIT6 here, including a citation for the survey
+% Details regarding the MIDAS here, including a citation for the survey
 %
 
 subjectIDField={'SubjectID'};
 
-summaryMeasureFieldName='HIT6';
+summaryMeasureFieldName='MIDAS';
 
 % Add the question text here
 questions={'WhenYouHaveHeadaches_HowOftenIsThePainSevere___',...
