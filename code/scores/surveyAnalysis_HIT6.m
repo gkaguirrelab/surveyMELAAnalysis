@@ -1,7 +1,11 @@
 function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_HIT6( T )
 % function [ processedTable ] = surveyAnalysis_HIT6( T )
 %
-% HEADACHE IMPACT TEST (HIT-6)
+% HEADACHE IMPACT TEST (HIT-6):
+%
+%   Yang M, Rendas-Baum R, Varon SF, Kosinski M. Validation of the 
+%   headache impact test (HIT-6TM) across episodic and chronic migraine. 
+%   Cephalalgia. 2010;31:357?367. doi: 10.1177/0333102410379890.
 %
 % Scores can range from 36-78, indicating the following impact headaches
 % have on the patient's life:
@@ -10,8 +14,6 @@ function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_H
 % 56-59 Substantial
 % 50-55 Some
 % <= 49 Little to None
-%
-% *citation for the survey*
 %
 
 subjectIDField={'SubjectID'};

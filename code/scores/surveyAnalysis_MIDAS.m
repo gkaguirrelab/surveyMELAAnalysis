@@ -1,7 +1,11 @@
 function [ scoreTable, valuesTable, summaryMeasureFieldName ] = surveyAnalysis_MIDAS( T )
 % function [ processedTable ] = surveyAnalysis_MIDAS( T )
 %
-% THE MIGRAINE DISABILITY ASSESSMENT (MIDAS)
+% THE MIGRAINE DISABILITY ASSESSMENT (MIDAS):
+% 
+%   Stewart WF, Lipton RB, Dowson AJ, Sawyer J. Development and testing 
+%   of the Migraine Disability Assessment (MIDAS) Questionnaire to assess 
+%   headache-related disability. Neurology 2001; 56: 20?28.
 % 
 % Scores are interpreted as follows:
 %
